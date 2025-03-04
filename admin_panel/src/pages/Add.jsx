@@ -31,26 +31,25 @@ const Add = () => {
       formData.append("price", price);
       formData.append("category", category);
       formData.append("subCategory", subCategory);
-      formData.append("bestseller", bestseller);
+      formData.append("bestseller", bestseller); // Already included
       formData.append("sizes", JSON.stringify(sizes));
 
       Object.keys(images).forEach((key) => {
         formData.append(`image${parseInt(key) + 1}`, images[key]);
       });
 
-      // Debug FormData contents
       for (let pair of formData.entries()) {
         console.log(`${pair[0]}:`, pair[1]);
       }
 
       const token = localStorage.getItem("token");
-      console.log("Token sent:", token); // Debug token
+      console.log("Token sent:", token);
       if (!token) {
         toast.error("🚨 No token found. Please login again.");
         return;
       }
 
-      console.log("Sending request to:", `${backendUrl}/api/product/add`); // Debug URL
+      console.log("Sending request to:", `${backendUrl}/api/product/add`);
       const response = await axios.post(`${backendUrl}/api/product/add`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -58,7 +57,7 @@ const Add = () => {
         },
       });
 
-      console.log("Server response:", response.data); // Debug response
+      console.log("Server response:", response.data);
       if (response.data.success) {
         setImages({});
         setName("");
@@ -66,14 +65,14 @@ const Add = () => {
         setPrice("");
         setCategory("Men");
         setSubCategory("Topwear");
-        setBestseller(false);
+        setBestseller(false); // Reset bestseller
         setSizes([]);
         toast.success("🎉 Product added successfully!");
       } else {
         toast.error(`❌ Failed to add product: ${response.data.message}`);
       }
     } catch (error) {
-      console.error("Submission error:", error.response?.data || error.message); // Debug full error
+      console.error("Submission error:", error.response?.data || error.message);
       toast.error(`⚠️ Submission error: ${error.response?.data?.message || error.message}`);
     }
   };
@@ -196,6 +195,20 @@ const Add = () => {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Added Bestseller Checkbox */}
+        <div className="flex items-center space-x-3">
+          <input
+            id="bestseller"
+            type="checkbox"
+            className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+            checked={bestseller}
+            onChange={(e) => setBestseller(e.target.checked)}
+          />
+          <label htmlFor="bestseller" className="text-lg font-semibold text-gray-700">
+            Mark as Bestseller
+          </label>
         </div>
 
         <div className="text-right">

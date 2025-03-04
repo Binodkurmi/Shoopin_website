@@ -7,23 +7,23 @@ import List from "./pages/List";
 import Orders from "./pages/Orders";
 import Login from "./components/Login";
 
-// Define constants for export
-export const backendUrl = "http://localhost:4000"; // Backend URL
-export const currency = "$"; // Currency symbol (adjust as needed)
+export const backendUrl = "http://localhost:4000";
+export const currency = "$";
 
 const App = () => {
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState(localStorage.getItem("adminToken") || "");
 
-  // Reset token on refresh
   useEffect(() => {
-    setToken("");
-  }, []);
+    // --- Added Debug: Log initial token ---
+    console.log("App useEffect - Initial token:", token);
+  }, []); // Empty dependency array to run only on mount
 
   const handleLogout = () => {
     setToken("");
-    localStorage.removeItem("token");
+    localStorage.removeItem("adminToken");
     localStorage.removeItem("savedEmail");
     localStorage.removeItem("savedPassword");
+    console.log("Logged out, token cleared");
   };
 
   return (
@@ -37,8 +37,8 @@ const App = () => {
             <div className="w-[70%] mx-auto ml-[max(5vw, 25px)] my-8 text-gray-600 text-base">
               <Routes>
                 <Route path="/add" element={<Add />} />
-                <Route path="/list" element={<List />} />
-                <Route path="/orders" element={<Orders />} />
+                <Route path="/list" element={<List token={token} />} />
+                <Route path="/orders" element={<Orders token={token} />} />
               </Routes>
             </div>
           </div>

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { backendUrl } from "../App";
+import { backendUrl } from "../App"; // Only import backendUrl
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function Login({ setToken }) {
+function Login({ setToken }) { // Renamed from setAppToken for consistency
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -13,7 +13,11 @@ function Login({ setToken }) {
     e.preventDefault();
 
     if (!email || !password) {
-      toast.error("Please enter both email and password.");
+      toast.error("Please enter both email and password.", {
+        position: "top-right",
+        autoClose: 3000,
+        className: "bg-red-500 text-white rounded-md shadow-md",
+      });
       return;
     }
 
@@ -23,18 +27,19 @@ function Login({ setToken }) {
         password,
       });
 
+      console.log("Login response:", response.data);
+
       if (response.data?.success) {
         const token = response.data.token;
         if (token) {
           if (typeof setToken === "function") {
-            setToken(token); // Set token in App.jsx state
-            localStorage.setItem("token", token); // Persist token
-            console.log("Token stored:", token); // Debug
+            setToken(token); // Set in App.jsx state
           } else {
             console.error("setToken is not a function");
-            toast.error("Internal error: Unable to set token.");
-            return;
           }
+
+          localStorage.setItem("token", token); // Persist token for shop frontend
+          console.log("Token stored:", token);
 
           toast.success("🎉 Login successful!", {
             position: "top-right",
@@ -68,7 +73,7 @@ function Login({ setToken }) {
         });
       }
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Login error:", error.response?.data || error.message);
       const errorMessage = error.response?.data?.message || "Something went wrong. Please try again.";
       toast.error(`⚠️ ${errorMessage}`, {
         position: "top-right",
@@ -137,6 +142,6 @@ function Login({ setToken }) {
       </div>
     </div>
   );
-}
+};
 
 export default Login;
